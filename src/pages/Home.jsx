@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 function Home() {
+  const navigate = useNavigate();
   const schedule = [
     {
       dayLabel: "TUE",
@@ -39,7 +42,10 @@ function Home() {
               From landing pages to automation, we craft lead funnels that grow
               your business on autopilot.
             </p>
-            <button className="mt-5 rounded-xl bg-neutral-900 px-5 py-3 font-semibold text-white shadow-[0_8px_24px_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-0.5 w-fit">
+            <button
+              onClick={() => navigate("/login")}
+              className="mt-5 rounded-xl bg-neutral-900 px-5 py-3 font-semibold text-white shadow-[0_8px_24px_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-0.5 w-fit"
+            >
               Get Started
             </button>
 

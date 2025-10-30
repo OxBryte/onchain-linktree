@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import "./UserProfile.css";
+
 
 function UserProfile() {
   const { username } = useParams();
