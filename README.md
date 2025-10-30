@@ -1,16 +1,83 @@
-# React + Vite
+# Onchain Linktree
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React app that showcases onchain profiles and links. The Home page features a polished hero and schedule timeline built entirely with Tailwind CSS utilities.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Elegant hero section with CTAs and subtle glassmorphism
+- Timeline/schedule card stack with soft shadows and rotations
+- Client-side routing for usernames (e.g. `/vitalik`)
+- Fully styled using Tailwind CSS v4 (no custom CSS needed)
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + Vite 7
+- React Router
+- Tailwind CSS v4 (via `@tailwindcss/vite`)
 
-## Expanding the ESLint configuration
+## Packages Used
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Runtime:
+
+- `react`, `react-dom`
+- `react-router-dom`
+- `tailwindcss`
+- `@tailwindcss/vite`
+- Web3 stack: `wagmi`, `viem`, `@reown/appkit`, `@reown/appkit-adapter-wagmi`
+- State/data: `@tanstack/react-query`
+
+Dev/Tooling:
+
+- `vite`, `@vitejs/plugin-react`
+- `eslint`, `@eslint/js`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals`
+
+## Getting Started
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Start the dev server:
+
+```bash
+npm run dev
+```
+
+3. Build for production:
+
+```bash
+npm run build
+```
+
+4. Preview the production build:
+
+```bash
+npm run preview
+```
+
+## Tailwind Setup
+
+Tailwind v4 is enabled via the Vite plugin and a single import:
+
+- `vite.config.js` adds the plugin
+- `src/index.css` contains `@import "tailwindcss";`
+
+Use Tailwind utility classes directly in JSX (see `src/pages/Home.jsx`).
+
+## Project Structure
+
+```
+src/
+  main.jsx          # App bootstrap
+  App.jsx           # Routes
+  pages/
+    Home.jsx        # Tailwind hero + timeline
+    UserProfile.jsx # Username route
+  index.css         # Tailwind import
+```
+
+## License
+
+MIT
