@@ -1,4 +1,4 @@
-import { useAccount, useReadContract } from "wagmi";
+import { useReadContract } from "wagmi";
 import { userDataAbi } from "../abi/userDataContract";
 import { useAppKitAccount } from "@reown/appkit/react";
 
@@ -12,6 +12,7 @@ export function useMyUserDetails() {
     abi: userDataAbi,
     address: CONTRACT_ADDRESS,
     functionName: "getMyDetails",
+    account: address,
     query: { enabled: canRead },
   });
 
@@ -19,13 +20,14 @@ export function useMyUserDetails() {
 }
 
 export function useMyDataArray() {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAppKitAccount();
   const canRead = Boolean(CONTRACT_ADDRESS) && isConnected;
 
   const result = useReadContract({
     abi: userDataAbi,
     address: CONTRACT_ADDRESS,
     functionName: "getMyDataArray",
+    account: address,
     query: { enabled: canRead },
   });
 
