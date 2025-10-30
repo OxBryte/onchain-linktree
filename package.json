@@ -10,11 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reown/appkit": "^1.8.12",
+    "@reown/appkit-adapter-wagmi": "^1.8.12",
     "@tailwindcss/vite": "^4.1.16",
+    "@tanstack/react-query": "^5.90.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5",
-    "tailwindcss": "^4.1.16"
+    "tailwindcss": "^4.1.16",
+    "viem": "^2.38.5",
+    "wagmi": "^2.19.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
