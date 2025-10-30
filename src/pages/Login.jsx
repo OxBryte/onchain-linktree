@@ -1,12 +1,59 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppKit } from "@reown/appkit/react";
+import {
+  useAccount,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import { userDataAbi } from "../lib/abi/userDataContract";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
-  const { open, close } = useAppKit();
+  const { open } = useAppKit();
+  const { isConnected } = useAccount();
+
+  const contractAddress = import.meta.env.VITE_USER_DATA_CONTRACT_ADDRESS;
+
+  // ABI moved to src/lib/abi/userDataContract
+
+  const {
+    data: hash,
+    isPending,
+    writeContract,
+    error: writeError,
+  } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({ hash });
+
+  useEffect(() => {
+    if (isConfirmed && username.trim()) {
+      navigate(`/${username.trim()}`);
+    }
+  }, [isConfirmed, navigate, username]);
+
+  const onContinue = () => {
+    const value = username.trim();
+    if (!value) return;
+    if (!isConnected) {
+      open();
+      return;
+    }
+    if (!contractAddress) {
+      alert(
+        "Contract address not configured (VITE_USER_DATA_CONTRACT_ADDRESS)"
+      );
+      return;
+    }
+    writeContract({
+      abi: userDataAbi,
+      address: contractAddress,
+      functionName: "registerUser",
+      args: [value],
+    });
+  };
 
   return (
     <div className="min-h-[100vh] w-full bg-neutral-100 flex items-center justify-center px-6">
@@ -26,11 +73,14 @@ export default function Login() {
             className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-neutral-800 shadow-sm outline-none placeholder:text-neutral-400 focus:border-neutral-300"
           />
           <button
-            onClick={() => open()}
+            onClick={onContinue}
             className="w-full rounded-xl bg-neutral-900 px-4 py-3 font-semibold text-white shadow-[0_8px_24px_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-0.5"
           >
-            Continue
+            {isPending || isConfirming ? "Processing..." : "Continue"}
           </button>
+          {writeError && (
+            <p className="text-sm text-red-500">{writeError.message}</p>
+          )}
         </div>
       </div>
     </div>

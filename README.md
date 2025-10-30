@@ -14,6 +14,7 @@ A modern React app that showcases onchain profiles and links. The Home page feat
 - React 19 + Vite 7
 - React Router
 - Tailwind CSS v4 (via `@tailwindcss/vite`)
+- Web3: wagmi + viem + Reown AppKit
 
 ## Packages Used
 
@@ -66,6 +67,58 @@ Tailwind v4 is enabled via the Vite plugin and a single import:
 
 Use Tailwind utility classes directly in JSX (see `src/pages/Home.jsx`).
 
+## Smart Contract Integration
+
+Contract ABI is centralized in:
+
+- `src/lib/abi/userDataContract.js` (export: `userDataAbi`)
+
+Helper hooks for reads are in:
+
+- `src/lib/hooks/useUserContract.js` (exports: `useMyUserDetails`, `useMyDataArray`)
+
+Environment variables:
+
+```bash
+# required for contract calls
+VITE_USER_DATA_CONTRACT_ADDRESS=0xYourContractAddress
+
+# optional for Reown AppKit wallet modal
+VITE_APPKIT_PROJECT_ID=your_project_id
+```
+
+### Registering a user (Login page)
+
+- File: `src/pages/Login.jsx`
+- Flow: user enters a username → if wallet not connected, AppKit modal opens → if connected, app calls `registerUser(username)` using `wagmi` `useWriteContract` with `userDataAbi`.
+- On transaction confirmation, navigate to `/:username`.
+
+### Reading connected user data
+
+Example usage in a component:
+
+```jsx
+import { useMyUserDetails, useMyDataArray } from "../lib/hooks/useUserContract";
+
+const { data: details } = useMyUserDetails();
+const { data: dataArray } = useMyDataArray();
+```
+
+### Adding user data (example)
+
+```jsx
+import { useWriteContract } from "wagmi";
+import { userDataAbi } from "../lib/abi/userDataContract";
+
+const { writeContract } = useWriteContract();
+writeContract({
+  abi: userDataAbi,
+  address: import.meta.env.VITE_USER_DATA_CONTRACT_ADDRESS,
+  functionName: "addUserData",
+  args: ["twitter", "https://twitter.com/you"],
+});
+```
+
 ## Project Structure
 
 ```
@@ -75,6 +128,12 @@ src/
   pages/
     Home.jsx        # Tailwind hero + timeline
     UserProfile.jsx # Username route
+    Login.jsx       # Register username on-chain
+  lib/
+    abi/
+      userDataContract.js   # Contract ABI
+    hooks/
+      useUserContract.js    # Read helpers
   index.css         # Tailwind import
 ```
 
