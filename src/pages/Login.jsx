@@ -86,14 +86,14 @@ export default function Login() {
       userDetails?.username &&
       userDetails.username.trim().length > 0
     ) {
-      navigate(`/${userDetails.username.trim()}`);
+      navigate("/dashboard");
     }
   }, [isConnected, detailsLoading, userDetails, navigate]);
 
   // Redirect after successful registration
   useEffect(() => {
     if (isConfirmed && username.trim()) {
-      navigate(`/${username.trim()}`);
+      navigate("/dashboard");
     }
   }, [isConfirmed, navigate, username]);
 

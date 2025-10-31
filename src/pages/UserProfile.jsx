@@ -103,97 +103,93 @@ function UserProfile() {
   }));
 
   return (
-    <div className="min-h-[100vh] w-full bg-neutral-100 px-6 py-10">
-      <div className="mx-auto mb-8 max-w-xl">
+    <div className="min-h-[100vh] w-full bg-gradient-to-br from-neutral-50 to-neutral-100">
+      {/* Minimal Back Button */}
+      <div className="absolute top-6 left-6">
         <Link
           to="/"
-          className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
+          className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-neutral-700 transition-colors"
         >
-          <span className="mr-1">←</span> Back
+          <span>←</span> <span>Back</span>
         </Link>
       </div>
 
-      <div className="mx-auto w-full max-w-xl rounded-3xl bg-white p-8 shadow-[0_24px_48px_rgba(0,0,0,0.08)]">
-        <div className="flex flex-col items-center text-center">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-neutral-100 text-4xl">
-            👤
+      <div className="flex min-h-screen items-center justify-center px-6 py-16">
+        <div className="w-full max-w-md">
+          {/* Profile Header - Bold & Eye-catching */}
+          <div className="mb-12 text-center">
+            <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-neutral-900 to-neutral-700 text-5xl shadow-xl">
+              👤
+            </div>
+            <h1 className="text-4xl font-bold text-neutral-900 tracking-tight">
+              {displayName}
+            </h1>
+            <p className="mt-2 text-base text-neutral-500">@{username}</p>
           </div>
-          <h1 className="text-xl font-semibold text-neutral-900">
-            {displayName}
-          </h1>
-          <p className="mt-1 text-sm text-neutral-500">@{username}</p>
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-neutral-600">
-            {detailsLoading
-              ? "Loading on-chain details..."
-              : "Decentralized profile on the blockchain"}
-          </p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1 text-xs text-neutral-600">
-            <span>🔐</span>
-            Verified onchain
-          </div>
-        </div>
 
-        <div className="mt-8 space-y-3">
-          {(!dataLoading ? links : []).map((link, index) => (
-            <a
-              key={index}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-neutral-800 transition-colors hover:bg-white hover:shadow-sm"
-            >
-              <span className="flex items-center gap-3 text-sm">
-                <span className="text-base">🔗</span>
-                {link.title}
-              </span>
-              <span className="text-neutral-400 group-hover:text-neutral-600">
-                →
-              </span>
-            </a>
-          ))}
-          {!dataLoading && links.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 px-4 py-6 text-center text-sm text-neutral-500">
-              No links yet. Add one below.
+          {/* Links - Large & Prominent */}
+          <div className="mb-8 space-y-4">
+            {dataLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-900"></div>
+              </div>
+            ) : links.length > 0 ? (
+              links.map((link, index) => (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block rounded-2xl bg-white px-6 py-4 text-center font-semibold text-neutral-900 shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
+                >
+                  {link.title}
+                </a>
+              ))
+            ) : (
+              <div className="rounded-2xl bg-white px-6 py-12 text-center text-neutral-400 shadow-lg">
+                No links yet
+              </div>
+            )}
+          </div>
+
+          {/* Add Link Form - Subtle but Accessible */}
+          {isConnected && (
+            <div className="rounded-2xl bg-white p-6 shadow-lg">
+              <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+                <input
+                  placeholder="Label"
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  className="flex-1 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm outline-none focus:border-neutral-400 focus:bg-white"
+                  disabled={isPending || isConfirming}
+                />
+                <input
+                  placeholder="URL"
+                  value={valueInput}
+                  onChange={(e) => setValueInput(e.target.value)}
+                  className="flex-1 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm outline-none focus:border-neutral-400 focus:bg-white"
+                  disabled={isPending || isConfirming}
+                />
+              </div>
+              <button
+                onClick={onAdd}
+                className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-neutral-800 active:scale-[0.98] disabled:opacity-50"
+                disabled={
+                  !keyInput.trim() ||
+                  !valueInput.trim() ||
+                  isPending ||
+                  isConfirming
+                }
+              >
+                {isPending || isConfirming ? "Saving..." : "Add Link"}
+              </button>
+              {error && (
+                <p className="mt-2 text-center text-xs text-red-500">
+                  {error.message}
+                </p>
+              )}
             </div>
           )}
-        </div>
-
-        <div className="mt-8 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
-          <div className="mb-2 text-sm font-medium text-neutral-800">
-            Add link
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <input
-              placeholder="key (e.g. twitter)"
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-300"
-            />
-            <input
-              placeholder="value (https://...)"
-              value={valueInput}
-              onChange={(e) => setValueInput(e.target.value)}
-              className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-300"
-            />
-            <button
-              onClick={onAdd}
-              className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-semibold text-white shadow-sm disabled:opacity-60"
-              disabled={isPending || isConfirming}
-            >
-              {isPending || isConfirming ? "Saving..." : "Save"}
-            </button>
-          </div>
-          {error && (
-            <p className="mt-2 text-xs text-red-500">{error.message}</p>
-          )}
-        </div>
-
-        <div className="mt-8 flex items-center justify-between text-xs text-neutral-500">
-          <span>Stored on-chain</span>
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-            Base Sepolia
-          </span>
         </div>
       </div>
     </div>
