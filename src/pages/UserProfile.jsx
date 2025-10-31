@@ -4,10 +4,13 @@ import {
   useAccount,
   useWriteContract,
   useWaitForTransactionReceipt,
+  useChainId,
 } from "wagmi";
+import toast from "react-hot-toast";
 import { useAppKit } from "@reown/appkit/react";
 import { userDataAbi } from "../lib/abi/userDataContract";
 import { useMyUserDetails, useMyDataArray } from "../lib/hooks/useUserContract";
+import { getExplorerUrl } from "../lib/utils/explorer";
 
 function UserProfile() {
   const { username } = useParams();
@@ -16,19 +19,58 @@ function UserProfile() {
 
   // On-chain reads for the connected wallet
   const { data: details, isLoading: detailsLoading } = useMyUserDetails();
-  console.log(details);
-  console.log(detailsLoading);
   const { data: dataArray, isLoading: dataLoading, refetch } = useMyDataArray();
-  console.log(dataArray);
-  console.log(dataLoading);
 
   const [keyInput, setKeyInput] = useState("twitter");
   const [valueInput, setValueInput] = useState("");
 
   const contractAddress = import.meta.env.VITE_USER_DATA_CONTRACT_ADDRESS;
+  const chainId = useChainId();
   const { data: hash, isPending, writeContract, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash });
+
+  // Show toast when transaction hash is received (user signed)
+  useEffect(() => {
+    if (hash) {
+      const explorerUrl = getExplorerUrl(chainId, hash);
+      toast.success(
+        <div>
+          <div className="font-semibold">Transaction Submitted</div>
+          <a
+            href={explorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-600 hover:underline break-all"
+          >
+            {hash.slice(0, 10)}...{hash.slice(-8)}
+          </a>
+        </div>,
+        { duration: 5000 }
+      );
+    }
+  }, [hash, chainId]);
+
+  // Show toast when transaction is confirmed
+  useEffect(() => {
+    if (isConfirmed && hash) {
+      const explorerUrl = getExplorerUrl(chainId, hash);
+      toast.success(
+        <div>
+          <div className="font-semibold">Link Added Successfully!</div>
+          <a
+            href={explorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-600 hover:underline break-all"
+          >
+            View on explorer
+          </a>
+        </div>,
+        { duration: 6000 }
+      );
+    }
+  }, [isConfirmed, hash, chainId]);
 
   useEffect(() => {
     if (isConfirmed) {
