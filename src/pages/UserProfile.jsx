@@ -150,7 +150,7 @@ function UserProfile() {
   }));
 
   return (
-    <div className="min-h-[100vh] w-full bg-gradient-to-br from-neutral-50 to-neutral-100">
+    <div className="min-h-[100vh] w-full bg-white">
       {/* User Address Finder Component */}
       {!isOwnProfile && allUsers && allUsers.length > 0 && !targetAddress && (
         <UserAddressFinder
@@ -161,94 +161,122 @@ function UserProfile() {
         />
       )}
 
-      {/* Minimal Back Button */}
-      <div className="absolute top-6 left-6">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-neutral-700 transition-colors"
-        >
-          <span>←</span> <span>Back</span>
-        </Link>
+      {/* Elegant Header */}
+      <div className="border-b border-neutral-100 bg-white">
+        <div className="mx-auto max-w-3xl px-6 py-4">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-900 transition-colors"
+          >
+            <span>←</span>
+            <span>Back</span>
+          </Link>
+        </div>
       </div>
 
-      <div className="flex min-h-screen items-center justify-center px-6 py-16">
-        <div className="w-full max-w-md">
-          {/* Profile Header - Bold & Eye-catching */}
-          <div className="mb-12 text-center">
-            <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-neutral-900 to-neutral-700 text-5xl shadow-xl">
-              👤
-            </div>
-            <h1 className="text-4xl font-bold text-neutral-900 tracking-tight">
-              {displayName}
-            </h1>
-            <p className="mt-2 text-base text-neutral-500">@{username}</p>
+      <div className="mx-auto max-w-3xl px-6 py-12">
+        {/* Profile Section */}
+        <div className="mb-10 text-center">
+          <div className="mb-5 inline-flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-6xl shadow-2xl ring-4 ring-neutral-100">
+            👤
           </div>
+          <h1 className="mb-2 text-4xl font-bold tracking-tight text-neutral-900">
+            {displayName}
+          </h1>
+          <p className="text-lg text-neutral-500">@{username}</p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
+            <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
+            Verified onchain
+          </div>
+        </div>
 
-          {/* Links - Large & Prominent */}
-          <div className="mb-8 space-y-4">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-900"></div>
-              </div>
-            ) : links.length > 0 ? (
-              links.map((link, index) => (
+        {/* Links Section */}
+        <div className="mb-8">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="h-7 w-7 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900"></div>
+            </div>
+          ) : links.length > 0 ? (
+            <div className="space-y-3">
+              {links.map((link, index) => (
                 <a
                   key={index}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => Analytics.trackLinkClick(username, link.title, link.url)}
-                  className="group block rounded-2xl bg-white px-6 py-4 text-center font-semibold text-neutral-900 shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
+                  className="group flex items-center justify-between rounded-xl border-2 border-neutral-200 bg-white px-6 py-4 text-left transition-all hover:border-neutral-900 hover:shadow-lg hover:shadow-neutral-900/5"
                 >
-                  {link.title}
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-xl group-hover:bg-neutral-900 group-hover:text-white transition-colors">
+                      🔗
+                    </div>
+                    <div>
+                      <div className="font-semibold text-neutral-900 group-hover:text-neutral-900">
+                        {link.title}
+                      </div>
+                      <div className="mt-0.5 truncate text-xs text-neutral-500 max-w-[200px] sm:max-w-none">
+                        {link.url.replace(/^https?:\/\//, "").replace(/^www\./, "")}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0 text-neutral-300 transition-colors group-hover:text-neutral-900">
+                    →
+                  </div>
                 </a>
-              ))
-            ) : (
-              <div className="rounded-2xl bg-white px-6 py-12 text-center text-neutral-400 shadow-lg">
-                No links yet
-              </div>
-            )}
-          </div>
-
-          {/* Add Link Form - Only show if viewing own profile */}
-          {isOwnProfile && (
-            <div className="rounded-2xl bg-white p-6 shadow-lg">
-              <div className="mb-4 flex flex-col gap-2 sm:flex-row">
-                <input
-                  placeholder="Label"
-                  value={keyInput}
-                  onChange={(e) => setKeyInput(e.target.value)}
-                  className="flex-1 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm outline-none focus:border-neutral-400 focus:bg-white"
-                  disabled={isPending || isConfirming}
-                />
-                <input
-                  placeholder="URL"
-                  value={valueInput}
-                  onChange={(e) => setValueInput(e.target.value)}
-                  className="flex-1 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm outline-none focus:border-neutral-400 focus:bg-white"
-                  disabled={isPending || isConfirming}
-                />
-              </div>
-              <button
-                onClick={onAdd}
-                className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-neutral-800 active:scale-[0.98] disabled:opacity-50"
-                disabled={
-                  !keyInput.trim() ||
-                  !valueInput.trim() ||
-                  isPending ||
-                  isConfirming
-                }
-              >
-                {isPending || isConfirming ? "Saving..." : "Add Link"}
-              </button>
-              {error && (
-                <p className="mt-2 text-center text-xs text-red-500">
-                  {error.message}
-                </p>
-              )}
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50 px-6 py-16 text-center">
+              <div className="mb-3 text-4xl">🔗</div>
+              <p className="text-neutral-500">No links yet</p>
             </div>
           )}
         </div>
+
+        {/* Add Link Form - Only show if viewing own profile */}
+        {isOwnProfile && (
+          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-6">
+            <h3 className="mb-4 text-sm font-semibold text-neutral-900">
+              Add New Link
+            </h3>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+              <input
+                type="text"
+                placeholder="Label (e.g. Twitter)"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value)}
+                className="flex-1 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
+                disabled={isPending || isConfirming}
+              />
+              <input
+                type="url"
+                placeholder="https://..."
+                value={valueInput}
+                onChange={(e) => setValueInput(e.target.value)}
+                className="flex-1 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
+                disabled={isPending || isConfirming}
+              />
+            </div>
+            <button
+              onClick={onAdd}
+              className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-neutral-800 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={
+                !keyInput.trim() ||
+                !valueInput.trim() ||
+                isPending ||
+                isConfirming
+              }
+            >
+              {isPending || isConfirming ? "Saving..." : "Add Link"}
+            </button>
+            {error && (
+              <p className="mt-3 text-center text-xs text-red-600">
+                {error.message}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
