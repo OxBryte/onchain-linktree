@@ -165,12 +165,19 @@ src/
 - Quick stats: total links, join date, network
 - Link to view your public profile
 
-### Transaction Notifications
+### Admin Dashboard
 
-- Toast notifications using `react-hot-toast`
-- Shows transaction hash when user signs transaction
-- Confirmation toast when transaction is confirmed
-- Clickable links to view transaction on Basescan explorer
+- **Admin Dashboard** (`/admin`): Comprehensive analytics and user interaction tracking
+- Real-time metrics: Total users, profile views, link clicks, registrations
+- Top clicked links leaderboard
+- Recent activity feed (last 24 hours)
+- User engagement metrics including click-through rate
+- Auto-refreshing data every 5 seconds
+- Analytics tracking for:
+  - Profile views
+  - Link clicks
+  - User registrations
+  - Link additions
 
 ## Key Dependencies
 
