@@ -32,6 +32,7 @@ Runtime:
 - Web3 stack: `wagmi`, `viem`, `@reown/appkit`, `@reown/appkit-adapter-wagmi`
 - State/data: `@tanstack/react-query`
 - Notifications: `react-hot-toast`
+- Charts: `apexcharts`, `react-apexcharts`
 
 Dev/Tooling:
 
@@ -169,6 +170,12 @@ src/
 
 - **Admin Dashboard** (`/admin`): Comprehensive analytics and user interaction tracking
 - Real-time metrics: Total users, profile views, link clicks, registrations
+- **Interactive ApexCharts visualizations:**
+  - Hourly activity area chart (last 24 hours)
+  - Daily trends line chart (last 7 days)
+  - Event distribution pie chart
+  - User growth over time area chart
+  - Most active users horizontal bar chart (top 10)
 - Top clicked links leaderboard
 - Recent activity feed (last 24 hours)
 - User engagement metrics including click-through rate
@@ -189,6 +196,7 @@ src/
 - **react-router-dom**: Client-side routing
 - **tailwindcss**: Utility-first CSS framework
 - **react-hot-toast**: Beautiful toast notifications
+- **apexcharts** + **react-apexcharts**: Interactive chart library for data visualization
 
 Additional networks can be easily added by importing them from `@reown/appkit/networks`.
 
