@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import Chart from "react-apexcharts";
 import { useAllUsers } from "../lib/hooks/useUserContract";
 import Analytics from "../lib/utils/analytics";
 
@@ -104,8 +105,192 @@ function AdminDashboard() {
 
   const hourlyData = getHourlyChartData();
   const dailyData = getDailyChartData();
-  const maxHourlyCount = Math.max(...hourlyData.map((d) => d.count), 1);
-  const maxDailyCount = Math.max(...dailyData.map((d) => d.count), 1);
+
+  // ApexCharts configurations
+  const hourlyChartOptions = {
+    chart: {
+      type: "area",
+      height: 300,
+      toolbar: { show: false },
+      zoom: { enabled: false },
+    },
+    dataLabels: { enabled: false },
+    stroke: { curve: "smooth", width: 2 },
+    xaxis: {
+      categories: hourlyData.map((d) => d.hour),
+      labels: { style: { fontSize: "11px", colors: "#6B7280" } },
+    },
+    yaxis: {
+      labels: { style: { fontSize: "11px", colors: "#6B7280" } },
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.3,
+        stops: [0, 100],
+      },
+    },
+    colors: ["#3B82F6"],
+    grid: { borderColor: "#E5E7EB", strokeDashArray: 4 },
+    tooltip: {
+      theme: "light",
+      style: { fontSize: "12px" },
+    },
+  };
+
+  const hourlyChartSeries = [
+    {
+      name: "Events",
+      data: hourlyData.map((d) => d.count),
+    },
+  ];
+
+  const dailyChartOptions = {
+    chart: {
+      type: "line",
+      height: 300,
+      toolbar: { show: false },
+      zoom: { enabled: false },
+    },
+    dataLabels: { enabled: false },
+    stroke: { curve: "smooth", width: 3 },
+    xaxis: {
+      categories: dailyData.map((d) => d.date),
+      labels: { style: { fontSize: "11px", colors: "#6B7280" } },
+    },
+    yaxis: {
+      labels: { style: { fontSize: "11px", colors: "#6B7280" } },
+    },
+    colors: ["#10B981"],
+    grid: { borderColor: "#E5E7EB", strokeDashArray: 4 },
+    tooltip: {
+      theme: "light",
+      style: { fontSize: "12px" },
+    },
+  };
+
+  const dailyChartSeries = [
+    {
+      name: "Daily Events",
+      data: dailyData.map((d) => d.count),
+    },
+  ];
+
+  // Event distribution pie chart
+  const eventDistribution = {
+    profile_view: stats.totalProfileViews,
+    link_click: stats.totalLinkClicks,
+    user_registered: stats.totalUserRegistrations,
+    link_added: stats.totalLinkAdditions,
+  };
+
+  const pieChartOptions = {
+    chart: {
+      type: "pie",
+      height: 300,
+      toolbar: { show: false },
+    },
+    labels: ["Profile Views", "Link Clicks", "Registrations", "Links Added"],
+    colors: ["#3B82F6", "#10B981", "#8B5CF6", "#F59E0B"],
+    legend: {
+      position: "bottom",
+      fontSize: "12px",
+      labels: { colors: "#374151" },
+    },
+    dataLabels: {
+      enabled: true,
+      style: { fontSize: "12px", fontWeight: 600 },
+    },
+    tooltip: {
+      theme: "light",
+      y: {
+        formatter: (val) => val.toLocaleString(),
+      },
+    },
+  };
+
+  const pieChartSeries = [
+    eventDistribution.profile_view,
+    eventDistribution.link_click,
+    eventDistribution.user_registered,
+    eventDistribution.link_added,
+  ];
+
+  // User growth chart
+  const userGrowthData = stats.userGrowth || [];
+  const userGrowthChartOptions = {
+    chart: {
+      type: "area",
+      height: 300,
+      toolbar: { show: false },
+      zoom: { enabled: false },
+    },
+    dataLabels: { enabled: false },
+    stroke: { curve: "smooth", width: 2 },
+    xaxis: {
+      categories: userGrowthData.map((d) => d.date),
+      labels: { style: { fontSize: "11px", colors: "#6B7280" } },
+    },
+    yaxis: {
+      labels: { style: { fontSize: "11px", colors: "#6B7280" } },
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.3,
+        stops: [0, 100],
+      },
+    },
+    colors: ["#8B5CF6"],
+    grid: { borderColor: "#E5E7EB", strokeDashArray: 4 },
+    tooltip: {
+      theme: "light",
+      style: { fontSize: "12px" },
+    },
+  };
+
+  const userGrowthChartSeries = [
+    {
+      name: "Total Users",
+      data: userGrowthData.map((d) => d.count),
+    },
+  ];
+
+  // Most active users bar chart
+  const mostActiveUsersData = stats.mostActiveUsers?.slice(0, 10) || [];
+  const mostActiveUsersChartOptions = {
+    chart: {
+      type: "bar",
+      height: 350,
+      toolbar: { show: false },
+      horizontal: true,
+    },
+    dataLabels: { enabled: true, style: { fontSize: "11px" } },
+    xaxis: {
+      categories: mostActiveUsersData.map((u) => `@${u.username}`),
+      labels: { style: { fontSize: "11px", colors: "#6B7280" } },
+    },
+    yaxis: {
+      labels: { style: { fontSize: "11px", colors: "#6B7280" } },
+    },
+    colors: ["#3B82F6"],
+    grid: { borderColor: "#E5E7EB", strokeDashArray: 4 },
+    tooltip: {
+      theme: "light",
+      style: { fontSize: "12px" },
+    },
+  };
+
+  const mostActiveUsersChartSeries = [
+    {
+      name: "Total Activity",
+      data: mostActiveUsersData.map((u) => u.total),
+    },
+  ];
 
   return (
     <div className="min-h-[100vh] w-full bg-neutral-50">
@@ -216,69 +401,90 @@ function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Activity Charts */}
+        {/* Charts Section */}
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Hourly Activity Chart */}
           <div className="rounded-xl border border-neutral-200 bg-white p-6">
             <h2 className="mb-4 text-lg font-semibold text-neutral-900">
               Activity (Last 24 Hours)
             </h2>
-            <div className="space-y-2">
-              {hourlyData.map((data, idx) => (
-                <div key={idx} className="flex items-center gap-3">
-                  <div className="w-16 text-xs text-neutral-500">{data.hour}</div>
-                  <div className="flex-1">
-                    <div className="flex h-6 items-center">
-                      <div
-                        className="h-full rounded bg-blue-500 transition-all"
-                        style={{
-                          width: `${(data.count / maxHourlyCount) * 100}%`,
-                        }}
-                      />
-                      <span className="ml-2 text-xs font-medium text-neutral-700">
-                        {data.count}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Chart
+              options={hourlyChartOptions}
+              series={hourlyChartSeries}
+              type="area"
+              height={300}
+            />
           </div>
 
-          {/* Daily Trends */}
+          {/* Daily Trends Chart */}
           <div className="rounded-xl border border-neutral-200 bg-white p-6">
             <h2 className="mb-4 text-lg font-semibold text-neutral-900">
               Daily Trends (Last 7 Days)
             </h2>
-            <div className="space-y-2">
-              {dailyData.length > 0 ? (
-                dailyData.map((data, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <div className="w-20 text-xs text-neutral-500">
-                      {data.date}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex h-6 items-center">
-                        <div
-                          className="h-full rounded bg-green-500 transition-all"
-                          style={{
-                            width: `${(data.count / maxDailyCount) * 100}%`,
-                          }}
-                        />
-                        <span className="ml-2 text-xs font-medium text-neutral-700">
-                          {data.count}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-8 text-center text-sm text-neutral-400">
-                  No data for the last 7 days
-                </div>
-              )}
-            </div>
+            {dailyData.length > 0 ? (
+              <Chart
+                options={dailyChartOptions}
+                series={dailyChartSeries}
+                type="line"
+                height={300}
+              />
+            ) : (
+              <div className="flex h-[300px] items-center justify-center text-sm text-neutral-400">
+                No data for the last 7 days
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Second Row Charts */}
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Event Distribution Pie Chart */}
+          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+            <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+              Event Distribution
+            </h2>
+            <Chart
+              options={pieChartOptions}
+              series={pieChartSeries}
+              type="pie"
+              height={300}
+            />
+          </div>
+
+          {/* User Growth Chart */}
+          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+            <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+              User Growth Over Time
+            </h2>
+            {userGrowthData.length > 0 ? (
+              <Chart
+                options={userGrowthChartOptions}
+                series={userGrowthChartSeries}
+                type="area"
+                height={300}
+              />
+            ) : (
+              <div className="flex h-[300px] items-center justify-center text-sm text-neutral-400">
+                No user growth data yet
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Most Active Users Chart */}
+        {mostActiveUsersData.length > 0 && (
+          <div className="mb-6 rounded-xl border border-neutral-200 bg-white p-6">
+            <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+              Most Active Users (Top 10)
+            </h2>
+            <Chart
+              options={mostActiveUsersChartOptions}
+              series={mostActiveUsersChartSeries}
+              type="bar"
+              height={350}
+            />
+          </div>
+        )}
 
         {/* Top Content */}
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
