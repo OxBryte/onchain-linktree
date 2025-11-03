@@ -5,22 +5,62 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
   useChainId,
+  useReadContract,
 } from "wagmi";
 import toast from "react-hot-toast";
 import { useAppKit } from "@reown/appkit/react";
 import { userDataAbi } from "../lib/abi/userDataContract";
-import { useMyUserDetails, useMyDataArray } from "../lib/hooks/useUserContract";
+import {
+  useMyUserDetails,
+  useMyDataArray,
+  useAllUsers,
+  useUserDataArray,
+} from "../lib/hooks/useUserContract";
 import { getExplorerUrl } from "../lib/utils/explorer";
 import Analytics from "../lib/utils/analytics";
 
 function UserProfile() {
   const { username } = useParams();
-  const { isConnected } = useAccount();
+  const { isConnected, address: connectedAddress } = useAccount();
   const { open } = useAppKit();
 
-  // On-chain reads for the connected wallet
-  const { data: details, isLoading: detailsLoading } = useMyUserDetails();
-  const { data: dataArray, isLoading: dataLoading, refetch } = useMyDataArray();
+  // Get all users to find address by username
+  const { data: allUsers } = useAllUsers();
+  const { data: myDetails } = useMyUserDetails();
+
+  // Check if viewing own profile
+  const isOwnProfile =
+    isConnected &&
+    myDetails?.username?.toLowerCase() === username?.toLowerCase();
+
+  // Find user address by checking each user's details
+  const [targetAddress, setTargetAddress] = useState(null);
+  const [searchingAddress, setSearchingAddress] = useState(false);
+
+  useEffect(() => {
+    if (isOwnProfile) {
+      setTargetAddress(connectedAddress);
+      setSearchingAddress(false);
+      return;
+    }
+
+    // Search through all users to find matching username
+    if (allUsers && allUsers.length > 0 && !targetAddress) {
+      setSearchingAddress(true);
+      // We'll check users one by one - but this is inefficient
+      // Better approach: use a component that checks each user
+    } else if (!allUsers || allUsers.length === 0) {
+      setSearchingAddress(false);
+    }
+  }, [isOwnProfile, allUsers, connectedAddress, username, myDetails, targetAddress]);
+
+  // Use appropriate hooks based on profile ownership
+  const { data: myDataArray, isLoading: myDataLoading, refetch } = useMyDataArray();
+  const { data: userDataArray, isLoading: userDataLoading } = useUserDataArray(targetAddress);
+
+  // Use appropriate data source
+  const dataArray = isOwnProfile ? myDataArray : userDataArray;
+  const isLoading = isOwnProfile ? myDataLoading : userDataLoading || searchingAddress;
 
   const [keyInput, setKeyInput] = useState("twitter");
   const [valueInput, setValueInput] = useState("");
@@ -101,8 +141,8 @@ function UserProfile() {
   };
 
   const displayName =
-    details?.username && details.username.length > 0
-      ? details.username
+    myDetails?.username && myDetails.username.toLowerCase() === username.toLowerCase()
+      ? myDetails.username
       : username;
   const links = (dataArray || []).map((item) => ({
     title: item.key,
@@ -111,6 +151,16 @@ function UserProfile() {
 
   return (
     <div className="min-h-[100vh] w-full bg-gradient-to-br from-neutral-50 to-neutral-100">
+      {/* User Address Finder Component */}
+      {!isOwnProfile && allUsers && allUsers.length > 0 && !targetAddress && (
+        <UserAddressFinder
+          allUsers={allUsers}
+          targetUsername={username}
+          onAddressFound={setTargetAddress}
+          onSearchComplete={() => setSearchingAddress(false)}
+        />
+      )}
+
       {/* Minimal Back Button */}
       <div className="absolute top-6 left-6">
         <Link
@@ -136,7 +186,7 @@ function UserProfile() {
 
           {/* Links - Large & Prominent */}
           <div className="mb-8 space-y-4">
-            {dataLoading ? (
+            {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-900"></div>
               </div>
@@ -160,8 +210,8 @@ function UserProfile() {
             )}
           </div>
 
-          {/* Add Link Form - Subtle but Accessible */}
-          {isConnected && (
+          {/* Add Link Form - Only show if viewing own profile */}
+          {isOwnProfile && (
             <div className="rounded-2xl bg-white p-6 shadow-lg">
               <div className="mb-4 flex flex-col gap-2 sm:flex-row">
                 <input
@@ -202,6 +252,41 @@ function UserProfile() {
       </div>
     </div>
   );
+}
+
+// Component to find user address by username
+function UserAddressFinder({ allUsers, targetUsername, onAddressFound, onSearchComplete }) {
+  const contractAddress = import.meta.env.VITE_USER_DATA_CONTRACT_ADDRESS;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentAddress = allUsers[currentIndex];
+
+  const { data: userDetails } = useReadContract({
+    abi: userDataAbi,
+    address: contractAddress,
+    functionName: "getUserDetails",
+    args: currentAddress ? [currentAddress] : undefined,
+    query: { enabled: Boolean(currentAddress) },
+  });
+
+  useEffect(() => {
+    if (userDetails?.exists && userDetails?.username) {
+      if (userDetails.username.toLowerCase() === targetUsername.toLowerCase()) {
+        onAddressFound(currentAddress);
+        onSearchComplete();
+        return;
+      }
+    }
+
+    // Move to next user
+    if (currentIndex < allUsers.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      // Searched all users, didn't find match
+      onSearchComplete();
+    }
+  }, [userDetails, currentIndex, allUsers.length, targetUsername, currentAddress, onAddressFound, onSearchComplete]);
+
+  return null; // This component doesn't render anything
 }
 
 export default UserProfile;

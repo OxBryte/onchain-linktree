@@ -56,3 +56,15 @@ export function useUserDetails(address) {
 
   return result;
 }
+
+export function useUserDataArray(address) {
+  const result = useReadContract({
+    abi: userDataAbi,
+    address: CONTRACT_ADDRESS,
+    functionName: "getUserDataArray",
+    args: address ? [address] : undefined,
+    query: { enabled: Boolean(CONTRACT_ADDRESS) && Boolean(address) },
+  });
+
+  return result;
+}
