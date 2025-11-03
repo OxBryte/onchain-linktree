@@ -139,7 +139,7 @@ class Analytics {
       });
     });
 
-    // Calculate averages (need to pass totalUsers from dashboard)
+    // Calculate averages
     const avgLinksPerUser =
       linkAdditions.length > 0 && userRegistrations.length > 0
         ? (linkAdditions.length / userRegistrations.length).toFixed(2)
@@ -163,8 +163,8 @@ class Analytics {
       mostActiveUsers,
       popularLinkTypes,
       userGrowth,
-      avgLinksPerUser: avgLinksPerUser.toFixed(2),
-      avgViewsPerUser: avgViewsPerUser.toFixed(2),
+      avgLinksPerUser,
+      avgViewsPerUser,
     };
   }
 }
