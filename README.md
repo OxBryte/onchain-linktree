@@ -10,6 +10,7 @@ A modern React app that showcases onchain profiles and links. The Home page feat
 - Fully styled using Tailwind CSS v4 (no custom CSS needed)
 - **Discover page** - Browse all registered users and explore profiles
 - Dashboard for managing your onchain profile
+- **Admin Dashboard** - Track user interactions, analytics, and platform metrics
 - Transaction notifications with react-hot-toast
 - Auto-redirect to dashboard if user already has a profile
 
@@ -136,6 +137,7 @@ src/
     Login.jsx       # Register username on-chain
     Dashboard.jsx   # Profile management dashboard
     Discover.jsx    # Browse all registered users
+    AdminDashboard.jsx # Analytics and user tracking dashboard
   lib/
     abi/
       userDataContract.js   # Contract ABI
@@ -143,8 +145,10 @@ src/
       useUserContract.js    # Read helpers
     utils/
       explorer.js           # Blockchain explorer URLs
+      analytics.js          # Analytics tracking utility
   index.css         # Tailwind import
 ```
+
 ### Discover Feature
 
 - **Discover Page** (`/discover`): Browse all registered users on the platform

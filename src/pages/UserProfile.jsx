@@ -11,6 +11,7 @@ import { useAppKit } from "@reown/appkit/react";
 import { userDataAbi } from "../lib/abi/userDataContract";
 import { useMyUserDetails, useMyDataArray } from "../lib/hooks/useUserContract";
 import { getExplorerUrl } from "../lib/utils/explorer";
+import Analytics from "../lib/utils/analytics";
 
 function UserProfile() {
   const { username } = useParams();
@@ -76,8 +77,14 @@ function UserProfile() {
     if (isConfirmed) {
       refetch?.();
       setValueInput("");
+      Analytics.trackLinkAdded(username, keyInput.trim());
     }
-  }, [isConfirmed, refetch]);
+  }, [isConfirmed, refetch, username, keyInput]);
+
+  // Track profile view
+  useEffect(() => {
+    Analytics.trackProfileView(username);
+  }, [username]);
 
   const onAdd = () => {
     if (!isConnected) {
@@ -140,6 +147,7 @@ function UserProfile() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => Analytics.trackLinkClick(username, link.title, link.url)}
                   className="group block rounded-2xl bg-white px-6 py-4 text-center font-semibold text-neutral-900 shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
                 >
                   {link.title}

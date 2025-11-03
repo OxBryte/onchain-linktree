@@ -11,6 +11,7 @@ import { userDataAbi } from "../lib/abi/userDataContract";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useMyUserDetails } from "../lib/hooks/useUserContract";
 import { getExplorerUrl } from "../lib/utils/explorer";
+import Analytics from "../lib/utils/analytics";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -93,9 +94,10 @@ export default function Login() {
   // Redirect after successful registration
   useEffect(() => {
     if (isConfirmed && username.trim()) {
+      Analytics.trackUserRegistration(username.trim(), address || "");
       navigate("/dashboard");
     }
-  }, [isConfirmed, navigate, username]);
+  }, [isConfirmed, navigate, username, address]);
 
   const onContinue = () => {
     const value = username.trim();
