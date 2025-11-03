@@ -8,6 +8,10 @@ A modern React app that showcases onchain profiles and links. The Home page feat
 - Timeline/schedule card stack with soft shadows and rotations
 - Client-side routing for usernames (e.g. `/vitalik`)
 - Fully styled using Tailwind CSS v4 (no custom CSS needed)
+- **Discover page** - Browse all registered users and explore profiles
+- Dashboard for managing your onchain profile
+- Transaction notifications with react-hot-toast
+- Auto-redirect to dashboard if user already has a profile
 
 ## Tech Stack
 
@@ -26,6 +30,7 @@ Runtime:
 - `@tailwindcss/vite`
 - Web3 stack: `wagmi`, `viem`, `@reown/appkit`, `@reown/appkit-adapter-wagmi`
 - State/data: `@tanstack/react-query`
+- Notifications: `react-hot-toast`
 
 Dev/Tooling:
 
@@ -75,7 +80,7 @@ Contract ABI is centralized in:
 
 Helper hooks for reads are in:
 
-- `src/lib/hooks/useUserContract.js` (exports: `useMyUserDetails`, `useMyDataArray`)
+- `src/lib/hooks/useUserContract.js` (exports: `useMyUserDetails`, `useMyDataArray`, `useAllUsers`, `useUserDetails`)
 
 Environment variables:
 
@@ -127,15 +132,54 @@ src/
   App.jsx           # Routes
   pages/
     Home.jsx        # Tailwind hero + timeline
-    UserProfile.jsx # Username route
+    UserProfile.jsx # Username route (public profile)
     Login.jsx       # Register username on-chain
+    Dashboard.jsx   # Profile management dashboard
+    Discover.jsx    # Browse all registered users
   lib/
     abi/
       userDataContract.js   # Contract ABI
     hooks/
       useUserContract.js    # Read helpers
+    utils/
+      explorer.js           # Blockchain explorer URLs
   index.css         # Tailwind import
 ```
+### Discover Feature
+
+- **Discover Page** (`/discover`): Browse all registered users on the platform
+- Shows all profiles registered on-chain
+- Click any profile card to view their public profile
+- Uses `getAllUsers()` contract function to fetch all registered addresses
+- Each card displays username and truncated wallet address
+
+### Dashboard Feature
+
+- **Dashboard** (`/dashboard`): Manage your onchain profile
+- View profile overview with stats
+- Add/edit links with expandable form
+- Quick stats: total links, join date, network
+- Link to view your public profile
+
+### Transaction Notifications
+
+- Toast notifications using `react-hot-toast`
+- Shows transaction hash when user signs transaction
+- Confirmation toast when transaction is confirmed
+- Clickable links to view transaction on Basescan explorer
+
+## Key Dependencies
+
+- **@reown/appkit**: Modern wallet connection SDK (formerly WalletConnect)
+- **@reown/appkit-adapter-wagmi**: Wagmi adapter for Reown AppKit
+- **wagmi**: React hooks for Ethereum
+- **viem**: TypeScript interface for Ethereum
+- **@tanstack/react-query**: Data fetching and state management
+- **react-router-dom**: Client-side routing
+- **tailwindcss**: Utility-first CSS framework
+- **react-hot-toast**: Beautiful toast notifications
+
+Additional networks can be easily added by importing them from `@reown/appkit/networks`.
 
 ## License
 

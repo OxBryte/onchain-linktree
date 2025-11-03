@@ -49,6 +49,13 @@ function Home() {
               Get Started
             </button>
 
+            <button
+              onClick={() => navigate("/discover")}
+              className="mt-4 rounded-xl border border-neutral-200 bg-white px-5 py-3 font-semibold text-neutral-700 shadow-sm transition-transform hover:-translate-y-0.5 w-fit"
+            >
+              Discover Profiles
+            </button>
+
             <div className="mt-10">
               <div className="mb-2 flex items-center gap-1 text-amber-400">
                 <span>★</span>
