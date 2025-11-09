@@ -6,10 +6,12 @@ import Dashboard from "./pages/Dashboard";
 import Discover from "./pages/Discover";
 import AdminDashboard from "./pages/AdminDashboard";
 import "./App.css";
+import ThemeToggle from "./components/ThemeToggle.jsx";
 
 function App() {
   return (
     <Router>
+      <ThemeToggle />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
