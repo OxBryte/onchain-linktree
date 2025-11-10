@@ -2,6 +2,10 @@
 
 A modern React app that showcases onchain profiles and links. The Home page features a polished hero and schedule timeline built entirely with Tailwind CSS utilities.
 
+# Contract Address
+
+0x45DAa0695CC153275619d1B5a17e0d5811B2c710
+
 ## Features
 
 - **Wallet Connection via Reown AppKit (WalletConnect)**
